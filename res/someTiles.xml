@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with TexturePacker http://www.codeandweb.com/texturepacker-->
+<!-- $TexturePacker:SmartUpdate:19ad6595d826e01a3bf597a73af5b85e:585b2cb8f39ef52f2f471a2367a70034:197b44abb51170d335a669438bd518ce$ -->
+<!--Format:
+n  => name of the sprite
+x  => sprite x pos in texture
+y  => sprite y pos in texture
+w  => sprite width (may be trimmed)
+h  => sprite height (may be trimmed)
+pX => x pos of the pivot point (relative to sprite width)
+pY => y pos of the pivot point (relative to sprite height)
+oX => sprite's x-corner offset (only available if trimmed)
+oY => sprite's y-corner offset (only available if trimmed)
+oW => sprite's original width (only available if trimmed)
+oH => sprite's original height (only available if trimmed)
+r => 'y' only set if sprite is rotated
+with polygon mode enabled:
+vertices   => points in sprite coordinate system (x0,y0,x1,y1,x2,y2, ...)
+verticesUV => points in sheet coordinate system (x0,y0,x1,y1,x2,y2, ...)
+triangles  => sprite triangulation, 3 vertex indices per triangle
+-->
+<TextureAtlas imagePath="someTiles.png" width="980" height="210">
+    <sprite n="box" x="0" y="0" w="70" h="70" pX="0.5" pY="0.5"/>
+    <sprite n="boxAlt" x="70" y="0" w="70" h="70" pX="0.5" pY="0.5"/>
+    <sprite n="boxCoin" x="140" y="0" w="70" h="70" pX="0.5" pY="0.5"/>
+    <sprite n="boxCoin_disabled" x="210" y="0" w="70" h="70" pX="0.5" pY="0.5"/>
+    <sprite n="boxCoinAlt" x="280" y="0" w="70" h="70" pX="0.5" pY="0.5"/>
+    <sprite n="boxCoinAlt_disabled" x="350" y="0" w="70" h="70" pX="0.5" pY="0.5"/>
+    <sprite n="boxEmpty" x="420" y="0" w="70" h="70" pX="0.5" pY="0.5"/>
+    <sprite n="boxExplosive" x="490" y="0" w="70" h="70" pX="0.5" pY="0.5"/>
+    <sprite n="boxExplosive_disabled" x="560" y="0" w="70" h="70" pX="0.5" pY="0.5"/>
+    <sprite n="boxExplosiveAlt" x="630" y="0" w="70" h="70" pX="0.5" pY="0.5"/>
+    <sprite n="boxItem" x="700" y="0" w="70" h="70" pX="0.5" pY="0.5"/>
+    <sprite n="boxItem_disabled" x="770" y="0" w="70" h="70" pX="0.5" pY="0.5"/>
+    <sprite n="boxItemAlt" x="840" y="0" w="70" h="70" pX="0.5" pY="0.5"/>
+    <sprite n="boxItemAlt_disabled" x="910" y="0" w="70" h="70" pX="0.5" pY="0.5"/>
+    <sprite n="boxWarning" x="0" y="70" w="70" h="70" pX="0.5" pY="0.5"/>
+    <sprite n="brickWall" x="70" y="70" w="70" h="70" pX="0.5" pY="0.5"/>
+    <sprite n="castle" x="140" y="70" w="70" h="70" pX="0.5" pY="0.5"/>
+    <sprite n="castleCenter" x="210" y="70" w="70" h="70" pX="0.5" pY="0.5"/>
+    <sprite n="castleCenter_rounded" x="280" y="70" w="70" h="70" pX="0.5" pY="0.5"/>
+    <sprite n="castleLeft" x="350" y="70" w="70" h="70" pX="0.5" pY="0.5"/>
+    <sprite n="castleMid" x="420" y="70" w="70" h="70" pX="0.5" pY="0.5"/>
+    <sprite n="castleRight" x="490" y="70" w="70" h="70" pX="0.5" pY="0.5"/>
+    <sprite n="grass" x="560" y="70" w="70" h="70" pX="0.5" pY="0.5"/>
+    <sprite n="grassCenter" x="630" y="70" w="70" h="70" pX="0.5" pY="0.5"/>
+    <sprite n="grassCenter_rounded" x="700" y="70" w="70" h="70" pX="0.5" pY="0.5"/>
+    <sprite n="grassLeft" x="770" y="70" w="70" h="70" pX="0.5" pY="0.5"/>
+    <sprite n="grassMid" x="840" y="70" w="70" h="70" pX="0.5" pY="0.5"/>
+    <sprite n="grassRight" x="910" y="70" w="70" h="70" pX="0.5" pY="0.5"/>
+    <sprite n="lock_blue" x="0" y="140" w="70" h="70" pX="0.5" pY="0.5"/>
+    <sprite n="lock_green" x="70" y="140" w="70" h="70" pX="0.5" pY="0.5"/>
+    <sprite n="lock_red" x="140" y="140" w="70" h="70" pX="0.5" pY="0.5"/>
+    <sprite n="lock_yellow" x="210" y="140" w="70" h="70" pX="0.5" pY="0.5"/>
+    <sprite n="sand" x="280" y="140" w="70" h="70" pX="0.5" pY="0.5"/>
+    <sprite n="sandCenter" x="350" y="140" w="70" h="70" pX="0.5" pY="0.5"/>
+    <sprite n="sandCenter_rounded" x="420" y="140" w="70" h="70" pX="0.5" pY="0.5"/>
+    <sprite n="sandLeft" x="490" y="140" w="70" h="70" pX="0.5" pY="0.5"/>
+    <sprite n="sandMid" x="560" y="140" w="70" h="70" pX="0.5" pY="0.5"/>
+    <sprite n="sandRight" x="630" y="140" w="70" h="70" pX="0.5" pY="0.5"/>
+    <sprite n="sign" x="700" y="140" w="70" h="70" pX="0.5" pY="0.5"/>
+    <sprite n="signExit" x="770" y="140" w="70" h="70" pX="0.5" pY="0.5"/>
+    <sprite n="signLeft" x="840" y="140" w="70" h="70" pX="0.5" pY="0.5"/>
+    <sprite n="signRight" x="910" y="140" w="70" h="70" pX="0.5" pY="0.5"/>
+</TextureAtlas>
