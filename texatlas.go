@@ -13,12 +13,12 @@ import (
 	"github.com/hajimehoshi/ebiten/ebitenutil"
 )
 
-type TexAtlas struct {
+type texAtlas struct {
 	img         *ebiten.Image
 	subTexRects map[string]image.Rectangle
 }
 
-func loadTexAtlas(fileName string) *TexAtlas {
+func loadTexAtlas(fileName string) *texAtlas {
 	file, err := os.Open(fileName)
 	if err != nil {
 		fmt.Printf("An error occurred while opening Texure Atlas XML: %v\n", err)
@@ -32,7 +32,7 @@ func loadTexAtlas(fileName string) *TexAtlas {
 		return nil
 	}
 
-	xmlRoot := TexAtlasXML{}
+	xmlRoot := XMLTexAtlas{}
 	err = xml.Unmarshal(data, &xmlRoot)
 	if err != nil {
 		fmt.Printf("An error occurred while parsing Texure Atlas XML: %v\n", err)
@@ -47,16 +47,16 @@ func loadTexAtlas(fileName string) *TexAtlas {
 		return nil
 	}
 
-	ta := TexAtlas{img, make(map[string]image.Rectangle)}
+	ta := texAtlas{img, make(map[string]image.Rectangle)}
 
-	for _, s := range xmlRoot.XMLSprites {
+	for _, s := range xmlRoot.Sprites {
 		x, xErr := strconv.Atoi(s.XPos)
 		y, yErr := strconv.Atoi(s.YPos)
 		w, wErr := strconv.Atoi(s.Width)
 		h, hErr := strconv.Atoi(s.Height)
 
 		if xErr != nil || yErr != nil || wErr != nil || hErr != nil {
-			fmt.Printf("An error occurred while atoiing coordinates(Texure Atlas Sprites): %v\n", err)
+			fmt.Printf("An error occurred while atoiing coordinates(Texure Atlas Sprites). \n")
 		}
 
 		rect := image.Rect(x, y, x+w, y+h)
@@ -70,15 +70,15 @@ func loadTexAtlas(fileName string) *TexAtlas {
 	return &ta
 }
 
-type TexAtlasXML struct {
-	XMLName    xml.Name            `xml:"TextureAtlas"`
-	ImagePath  string              `xml:"imagePath,attr"`
-	Width      string              `xml:"width,attr"`
-	Height     string              `xml:"height,attr"`
-	XMLSprites []TexAtlasSpriteXML `xml:"sprite"`
+type XMLTexAtlas struct {
+	XMLName   xml.Name            `xml:"TextureAtlas"`
+	ImagePath string              `xml:"imagePath,attr"`
+	Width     string              `xml:"width,attr"`
+	Height    string              `xml:"height,attr"`
+	Sprites   []XMLTexAtlasSprite `xml:"sprite"`
 }
 
-type TexAtlasSpriteXML struct {
+type XMLTexAtlasSprite struct {
 	XMLName xml.Name `xml:"sprite"`
 	Name    string   `xml:"n,attr"`
 	XPos    string   `xml:"x,attr"`
