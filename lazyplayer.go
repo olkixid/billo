@@ -1,6 +1,8 @@
 package main
 
 import (
+	"container/list"
+	//"fmt"
 	"github.com/hajimehoshi/ebiten"
 	"image/color"
 )
@@ -9,10 +11,12 @@ type lazyPlayer struct {
 	rect   rectangle
 	xSpeed float32
 	ySpeed float32
+
+	collidingRects *list.List
 }
 
 func newLazyPlayer(width float32, heigth float32) *lazyPlayer {
-	lp := lazyPlayer{rectangle{0, 0, width, heigth}, 0, 0}
+	lp := lazyPlayer{rectangle{70, 70, width, heigth}, 0, 0, list.New()}
 	return &lp
 }
 
@@ -31,8 +35,6 @@ func (lp *lazyPlayer) update() {
 	if ebiten.IsKeyPressed(ebiten.KeyRight) {
 		lp.xSpeed += 8
 	}
-	lp.rect.x += lp.xSpeed
-	lp.rect.y += lp.ySpeed
 }
 
 func (lp *lazyPlayer) draw(target *ebiten.Image) {
@@ -40,26 +42,53 @@ func (lp *lazyPlayer) draw(target *ebiten.Image) {
 }
 
 func (lp *lazyPlayer) checkCollision(rect rectangle) {
-	if lp.rect.overlaps(rect) {
+	checkRect := lp.rect
+	checkRect.x += lp.xSpeed
+	checkRect.y += lp.ySpeed
 
-		ir := lp.rect.intersect(rect)
+	if checkRect.overlaps(rect) {
+		lp.collidingRects.PushBack(rect)
+	}
+}
 
-		if ir.w < ir.h {
-			lpMiddleX := lp.rect.x + lp.rect.w/2
-			irMiddleX := ir.x + ir.w/2
-			if lpMiddleX > irMiddleX {
-				lp.rect.x += ir.w
-			} else {
+func (lp *lazyPlayer) fixPositions() {
+	if lp.collidingRects.Front() == nil {
+		lp.rect.x += lp.xSpeed
+		lp.rect.y += lp.ySpeed
+		return
+	}
+
+	lp.rect.x += lp.xSpeed
+	elm := lp.collidingRects.Front()
+	for elm != nil {
+		var currentRect rectangle = elm.Value.(rectangle)
+		if lp.rect.overlaps(currentRect) {
+			ir := lp.rect.intersect(currentRect)
+			if lp.xSpeed > 0 {
 				lp.rect.x -= ir.w
-			}
-		} else {
-			lpMiddleY := lp.rect.y + lp.rect.h/2
-			irMiddleY := ir.y + ir.h/2
-			if lpMiddleY > irMiddleY {
-				lp.rect.y += ir.h
-			} else {
-				lp.rect.y -= ir.h
+			} else if lp.xSpeed < 0 {
+				lp.rect.x += ir.w
 			}
 		}
+
+		elm = elm.Next()
 	}
+
+	lp.rect.y += lp.ySpeed
+	elm = lp.collidingRects.Front()
+	for elm != nil {
+		var currentRect rectangle = elm.Value.(rectangle)
+		if lp.rect.overlaps(currentRect) {
+			ir := lp.rect.intersect(currentRect)
+			if lp.ySpeed > 0 {
+				lp.rect.y -= ir.h
+			} else if lp.ySpeed < 0 {
+				lp.rect.y += ir.h
+			}
+		}
+
+		elm = elm.Next()
+	}
+
+	lp.collidingRects.Init()
 }
