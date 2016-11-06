@@ -11,10 +11,10 @@ func init() {
 }
 
 type rectangle struct {
-	x float32
-	y float32
-	w float32
-	h float32
+	x float64
+	y float64
+	w float64
+	h float64
 }
 
 func (r rectangle) overlaps(otherRect rectangle) bool {
@@ -24,45 +24,6 @@ func (r rectangle) overlaps(otherRect rectangle) bool {
 		}
 	}
 	return false
-}
-
-func (r rectangle) intersect(otherRect rectangle) rectangle {
-	ir := rectangle{}
-
-	w1 := r.x + r.w - otherRect.x
-	w2 := otherRect.x + otherRect.w - r.x
-	if w1 < w2 {
-		ir.w = w1
-	} else {
-		ir.w = w2
-	}
-	if ir.w <= 0 {
-		return rectangle{}
-	}
-
-	h1 := r.y + r.h - otherRect.y
-	h2 := otherRect.y + otherRect.h - r.y
-	if h1 < h2 {
-		ir.h = h1
-	} else {
-		ir.h = h2
-	}
-	if ir.h <= 0 {
-		return rectangle{}
-	}
-
-	if r.x > otherRect.x {
-		ir.x = r.x
-	} else {
-		ir.x = otherRect.x
-	}
-
-	if r.y > otherRect.y {
-		ir.y = r.y
-	} else {
-		ir.y = otherRect.y
-	}
-	return ir
 }
 
 //drawing stuff

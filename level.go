@@ -21,10 +21,14 @@ type level struct {
 	blocks []*block
 }
 
-func (l *level) checkCollision(lp *lazyPlayer) {
+func (l *level) getOverlappingRects(r rectangle) []rectangle {
+	overlapping := make([]rectangle, 0, 8)
 	for _, block := range l.blocks {
-		lp.checkCollision(block.dstRect)
+		if block.dstRect.overlaps(r) {
+			overlapping = append(overlapping, block.dstRect)
+		}
 	}
+	return overlapping
 }
 
 func (l *level) drawTo(target *ebiten.Image) {
@@ -116,7 +120,7 @@ func loadLevel(fileName string) *level {
 			if sr != image.ZR {
 				freshBlock := block{}
 				freshBlock.srcRect = sr
-				freshBlock.dstRect = rectangle{float32(c * 64), float32(r * 64), 64, 64}
+				freshBlock.dstRect = rectangle{float64(c * 64), float64(r * 64), 64, 64}
 				l.grid[r][c] = &freshBlock
 				l.blocks = append(l.blocks, &freshBlock)
 			}

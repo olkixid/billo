@@ -1,7 +1,6 @@
 package main
 
 import (
-	"container/list"
 	//"fmt"
 	"github.com/hajimehoshi/ebiten"
 	"image/color"
@@ -9,86 +8,76 @@ import (
 
 type lazyPlayer struct {
 	rect   rectangle
-	xSpeed float32
-	ySpeed float32
+	xSpeed float64
+	ySpeed float64
 
-	collidingRects *list.List
+	lastTimeJumpKey bool
 }
 
-func newLazyPlayer(width float32, heigth float32) *lazyPlayer {
-	lp := lazyPlayer{rectangle{70, 70, width, heigth}, 0, 0, list.New()}
+func newLazyPlayer(width float64, heigth float64) *lazyPlayer {
+	lp := lazyPlayer{rectangle{70, 70, width, heigth}, 0, 0, false}
 	return &lp
 }
 
 func (lp *lazyPlayer) update() {
 	lp.xSpeed = 0
-	lp.ySpeed = 0
-	if ebiten.IsKeyPressed(ebiten.KeyUp) {
-		lp.ySpeed += -8
+
+	if ebiten.IsKeyPressed(ebiten.KeyUp) && !lp.lastTimeJumpKey {
+		lp.ySpeed += -11
 	}
-	if ebiten.IsKeyPressed(ebiten.KeyDown) {
-		lp.ySpeed += 8
-	}
+	lp.lastTimeJumpKey = ebiten.IsKeyPressed(ebiten.KeyUp)
+
+	/*
+		if ebiten.IsKeyPressed(ebiten.KeyDown) {
+			lp.ySpeed += 8
+		}
+	*/
 	if ebiten.IsKeyPressed(ebiten.KeyLeft) {
-		lp.xSpeed += -8
+		lp.xSpeed += -5
 	}
 	if ebiten.IsKeyPressed(ebiten.KeyRight) {
-		lp.xSpeed += 8
+		lp.xSpeed += 5
 	}
+
+	lp.ySpeed += 0.5
 }
 
 func (lp *lazyPlayer) draw(target *ebiten.Image) {
 	lp.rect.drawFilled(target, color.RGBA{0x00, 0xff, 0x00, 0xff})
 }
 
-func (lp *lazyPlayer) checkCollision(rect rectangle) {
+func (lp *lazyPlayer) checkCollisions(lv *level) {
 	checkRect := lp.rect
 	checkRect.x += lp.xSpeed
 	checkRect.y += lp.ySpeed
 
-	if checkRect.overlaps(rect) {
-		lp.collidingRects.PushBack(rect)
-	}
-}
+	colliders := lv.getOverlappingRects(checkRect)
 
-func (lp *lazyPlayer) fixPositions() {
-	if lp.collidingRects.Front() == nil {
-		lp.rect.x += lp.xSpeed
-		lp.rect.y += lp.ySpeed
-		return
-	}
+	newXSpeed, newYSpeed := lp.xSpeed, lp.ySpeed
 
 	lp.rect.x += lp.xSpeed
-	elm := lp.collidingRects.Front()
-	for elm != nil {
-		var currentRect rectangle = elm.Value.(rectangle)
-		if lp.rect.overlaps(currentRect) {
-			ir := lp.rect.intersect(currentRect)
+	for _, collider := range colliders {
+		if lp.rect.overlaps(collider) {
+			newXSpeed = 0
 			if lp.xSpeed > 0 {
-				lp.rect.x -= ir.w
+				lp.rect.x = collider.x - lp.rect.w
 			} else if lp.xSpeed < 0 {
-				lp.rect.x += ir.w
+				lp.rect.x = collider.x + collider.w
 			}
 		}
-
-		elm = elm.Next()
 	}
 
 	lp.rect.y += lp.ySpeed
-	elm = lp.collidingRects.Front()
-	for elm != nil {
-		var currentRect rectangle = elm.Value.(rectangle)
-		if lp.rect.overlaps(currentRect) {
-			ir := lp.rect.intersect(currentRect)
+	for _, collider := range colliders {
+		if lp.rect.overlaps(collider) {
+			newYSpeed = 0
 			if lp.ySpeed > 0 {
-				lp.rect.y -= ir.h
+				lp.rect.y = collider.y - lp.rect.h
 			} else if lp.ySpeed < 0 {
-				lp.rect.y += ir.h
+				lp.rect.y = collider.y + collider.h
 			}
 		}
-
-		elm = elm.Next()
 	}
 
-	lp.collidingRects.Init()
+	lp.xSpeed, lp.ySpeed = newXSpeed, newYSpeed
 }

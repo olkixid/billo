@@ -7,7 +7,7 @@ import (
 )
 
 var otto *lazyPlayer
-var l *level
+var lv *level
 
 var globalTexAtlas *texAtlas
 
@@ -16,7 +16,7 @@ func init() {
 }
 
 func main() {
-	l = loadLevel("res/levels/level1.xml")
+	lv = loadLevel("res/levels/level1.xml")
 
 	otto = newLazyPlayer(20, 40)
 
@@ -27,10 +27,9 @@ func main() {
 func update(screen *ebiten.Image) error {
 
 	otto.update()
-	l.checkCollision(otto)
-	otto.fixPositions()
+	otto.checkCollisions(lv)
 
-	l.drawTo(screen)
+	lv.drawTo(screen)
 	otto.draw(screen)
 
 	return nil
