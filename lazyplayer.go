@@ -12,17 +12,18 @@ type lazyPlayer struct {
 	ySpeed float64
 
 	lastTimeJumpKey bool
+	grounded        bool
 }
 
 func newLazyPlayer(width float64, heigth float64) *lazyPlayer {
-	lp := lazyPlayer{rectangle{70, 70, width, heigth}, 0, 0, false}
+	lp := lazyPlayer{rectangle{70, 70, width, heigth}, 0, 0, false, false}
 	return &lp
 }
 
 func (lp *lazyPlayer) update() {
 	lp.xSpeed = 0
 
-	if ebiten.IsKeyPressed(ebiten.KeyUp) && !lp.lastTimeJumpKey {
+	if ebiten.IsKeyPressed(ebiten.KeyUp) && !lp.lastTimeJumpKey && lp.grounded {
 		lp.ySpeed += -11
 	}
 	lp.lastTimeJumpKey = ebiten.IsKeyPressed(ebiten.KeyUp)
@@ -53,16 +54,17 @@ func (lp *lazyPlayer) checkCollisions(lv *level) {
 
 	colliders := lv.getOverlappingRects(checkRect)
 
-	newXSpeed, newYSpeed := lp.xSpeed, lp.ySpeed
+	var leftCollision, rightCollision, upCollision, downCollision bool
 
 	lp.rect.x += lp.xSpeed
 	for _, collider := range colliders {
 		if lp.rect.overlaps(collider) {
-			newXSpeed = 0
 			if lp.xSpeed > 0 {
 				lp.rect.x = collider.x - lp.rect.w
+				rightCollision = true
 			} else if lp.xSpeed < 0 {
 				lp.rect.x = collider.x + collider.w
+				leftCollision = true
 			}
 		}
 	}
@@ -70,14 +72,26 @@ func (lp *lazyPlayer) checkCollisions(lv *level) {
 	lp.rect.y += lp.ySpeed
 	for _, collider := range colliders {
 		if lp.rect.overlaps(collider) {
-			newYSpeed = 0
 			if lp.ySpeed > 0 {
 				lp.rect.y = collider.y - lp.rect.h
+				downCollision = true
 			} else if lp.ySpeed < 0 {
 				lp.rect.y = collider.y + collider.h
+				upCollision = true
 			}
 		}
 	}
 
-	lp.xSpeed, lp.ySpeed = newXSpeed, newYSpeed
+	if leftCollision || rightCollision {
+		lp.xSpeed = 0
+	}
+	if upCollision || downCollision {
+		lp.ySpeed = 0
+	}
+
+	if downCollision {
+		lp.grounded = true
+	} else {
+		lp.grounded = false
+	}
 }
