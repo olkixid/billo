@@ -120,7 +120,7 @@ func loadLevel(fileName string) *level {
 			if sr != image.ZR {
 				freshBlock := block{}
 				freshBlock.srcRect = sr
-				freshBlock.dstRect = rectangle{float64(c * 64), float64(r * 64), 64, 64}
+				freshBlock.dstRect = rectangle{float64(c * 70), float64(r * 70), 70, 70}
 				l.grid[r][c] = &freshBlock
 				l.blocks = append(l.blocks, &freshBlock)
 			}

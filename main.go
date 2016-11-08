@@ -20,7 +20,7 @@ func main() {
 
 	otto = newLazyPlayer(20, 40)
 
-	ebiten.Run(update, 640, 640, 1, "Your game's title")
+	ebiten.Run(update, 70*16, 700, 1, "Your game's title")
 
 }
 

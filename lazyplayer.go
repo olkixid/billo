@@ -1,9 +1,9 @@
 package main
 
 import (
-	//"fmt"
+	"fmt"
 	"github.com/hajimehoshi/ebiten"
-	"image/color"
+	"image"
 )
 
 type lazyPlayer struct {
@@ -13,10 +13,14 @@ type lazyPlayer struct {
 
 	lastTimeJumpKey bool
 	grounded        bool
+	anim            animation
 }
 
 func newLazyPlayer(width float64, heigth float64) *lazyPlayer {
-	lp := lazyPlayer{rectangle{70, 70, width, heigth}, 0, 0, false, false}
+	lp := lazyPlayer{rectangle{70, 70, 0, 0}, 0, 0, false, false, animation{}}
+	lp.anim.init()
+	lp.rect.w, lp.rect.h = float64(lp.anim.running[0].Dx()), float64(lp.anim.running[0].Dy())
+	fmt.Println(lp.rect)
 	return &lp
 }
 
@@ -24,7 +28,7 @@ func (lp *lazyPlayer) update() {
 	lp.xSpeed = 0
 
 	if ebiten.IsKeyPressed(ebiten.KeyUp) && !lp.lastTimeJumpKey && lp.grounded {
-		lp.ySpeed += -11
+		lp.ySpeed += -12
 	}
 	lp.lastTimeJumpKey = ebiten.IsKeyPressed(ebiten.KeyUp)
 
@@ -43,14 +47,22 @@ func (lp *lazyPlayer) update() {
 	lp.ySpeed += 0.5
 }
 
-func (lp *lazyPlayer) draw(target *ebiten.Image) {
-	lp.rect.drawFilled(target, color.RGBA{0x00, 0xff, 0x00, 0xff})
-}
-
 func (lp *lazyPlayer) checkCollisions(lv *level) {
 	checkRect := lp.rect
-	checkRect.x += lp.xSpeed
-	checkRect.y += lp.ySpeed
+
+	if lp.xSpeed < 0 {
+		checkRect.x -= -lp.xSpeed
+		checkRect.w += -lp.xSpeed
+	} else {
+		checkRect.w += lp.xSpeed
+	}
+
+	if lp.ySpeed < 0 {
+		checkRect.y -= -lp.ySpeed
+		checkRect.h += -lp.ySpeed
+	} else {
+		checkRect.h += lp.ySpeed
+	}
 
 	colliders := lv.getOverlappingRects(checkRect)
 
@@ -94,4 +106,65 @@ func (lp *lazyPlayer) checkCollisions(lv *level) {
 	} else {
 		lp.grounded = false
 	}
+}
+
+//Drawing Stuff
+func (lp *lazyPlayer) draw(target *ebiten.Image) {
+	op := &ebiten.DrawImageOptions{}
+	op.ImageParts = lp
+	err := target.DrawImage(globalTexAtlas.img, op)
+	if err != nil {
+		fmt.Printf("Drawing error: %v\n", err)
+	}
+}
+
+func (lazyPlayer) Len() int {
+	return 1
+}
+
+func (lp *lazyPlayer) Dst(i int) (x0, y0, x1, y1 int) {
+	r := lp.rect
+	if lp.xSpeed < 0 {
+		r.x += r.w
+		r.w = -r.w
+	}
+	return int(r.x), int(r.y), int(r.x + r.w), int(r.y + r.h)
+}
+
+func (lp *lazyPlayer) Src(i int) (x0, y0, x1, y1 int) {
+	running := false
+	if lp.xSpeed != 0 {
+		running = true
+	}
+	imgR := lp.anim.getImgRect(running)
+	return imgR.Min.X, imgR.Min.Y, imgR.Max.X, imgR.Max.Y
+}
+
+type animation struct {
+	running             [7]image.Rectangle
+	currentRunningState int
+	front               image.Rectangle
+}
+
+func (an *animation) init() {
+	an.front = globalTexAtlas.subTexRects["p3_front"]
+	an.running[0] = globalTexAtlas.subTexRects["p3_walk01"]
+	an.running[1] = globalTexAtlas.subTexRects["p3_walk02"]
+	an.running[2] = globalTexAtlas.subTexRects["p3_walk03"]
+	an.running[3] = globalTexAtlas.subTexRects["p3_walk04"]
+	an.running[4] = globalTexAtlas.subTexRects["p3_walk05"]
+	an.running[5] = globalTexAtlas.subTexRects["p3_walk06"]
+	an.running[6] = globalTexAtlas.subTexRects["p3_walk07"]
+}
+
+func (an *animation) getImgRect(running bool) image.Rectangle {
+	if !running {
+		an.currentRunningState = -1
+		return an.front
+	}
+	an.currentRunningState++
+	if an.currentRunningState >= len(an.running) {
+		an.currentRunningState = 0
+	}
+	return an.running[an.currentRunningState]
 }
